@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Human : MonoBehaviour
@@ -10,28 +11,32 @@ public class Human : MonoBehaviour
     [NonSerialized]public Animator anim;
     SpriteRenderer sp;
 
-    [NonSerialized]public float speed;
-    [NonSerialized]public float moveSpeed;
-
         
     [Header("Charter settings")]
-    [SerializeField] float speedCharter;
+    public float speedCharter;
+    [NonSerialized] public float moveSpeed;
     [Range(0,100)]
     [SerializeField] int armorCharter;
     [Range(0,100)]
     [SerializeField] int healthCharter;
 
     [Header("Weapons settings")]
-    [SerializeField] int countShot;
+    [NonSerialized] public int countShot;
+    [SerializeField] int ammunition;
     [SerializeField] float distansShot;
-
+    [SerializeField] float timeReloadingWeapon;
     [SerializeField] Transform directionShot;
+
+    
+
+    
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         sp = GetComponent<SpriteRenderer>();
+        countShot = ammunition;
     }
 
     
@@ -44,21 +49,24 @@ public class Human : MonoBehaviour
 
     public void Shot()
     {
-        anim.SetTrigger("shot");
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, directionShot.position,distansShot);
-        GL.Begin(GL.LINES);
-        for (float i = 0; i < distansShot; ++i)
+
+        if(countShot != 0)
         {
-            float a = i / (float)distansShot;
-            float angle = a * Mathf.PI * 2;
-            // Vertex colors change from red to green
-            GL.Color(new Color(a, 1 - a, 0, 0.8F));
-            // One vertex at transform position
-            GL.Vertex3(0, 0, 0);
-            // Another vertex at edge of circle
-            GL.Vertex3(Mathf.Cos(angle) * 3, Mathf.Sin(angle) * 3, 0);
+            anim.SetTrigger("shot");
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, directionShot.position, distansShot);
+            Debug.DrawLine(transform.position, directionShot.position);
+            countShot--;
+            if(countShot == 0)
+            {
+                Debug.Log("Reloading...");
+                StartCoroutine("WeaponsReload");
+            }
+            if(hit.collider != null && hit.collider.tag == "zombie")
+            {
+                Debug.Log("Is shot");
+            }
         }
-        GL.End();
+       
     }
 
     public void RotatePlayer()
@@ -69,11 +77,14 @@ public class Human : MonoBehaviour
         transform.up = direction;
     }
 
-    void OnDrawGizmos()
+    public IEnumerator WeaponsReload()
     {
-        Gizmos.DrawRay(transform.position, directionShot.position);
+        yield return new WaitForSeconds(timeReloadingWeapon);
+        {
+            countShot=ammunition;
+            Debug.Log("Reload is done");
+        }
     }
-
-      
+  
 
 }

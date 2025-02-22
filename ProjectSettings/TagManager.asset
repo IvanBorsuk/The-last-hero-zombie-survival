@@ -7,6 +7,7 @@ TagManager:
   - grass
   - BorderLine
   - player
+  - zombie
   layers:
   - Default
   - TransparentFX

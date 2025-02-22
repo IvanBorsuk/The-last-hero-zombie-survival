@@ -31,19 +31,19 @@ public class Player : MonoBehaviour
         human.RotatePlayer();
         if(Input.GetKey("w"))
         {
-            human.Move(Vector3.up, human.speed);
+            human.Move(Vector3.up, human.speedCharter);
         }
         if(Input.GetKey("s"))
         {
-            human.Move(Vector3.down, human.speed);
+            human.Move(Vector3.down, human.speedCharter);
         }
         if(Input.GetKey("a"))
         {
-            human.Move(Vector3.left, human.speed);
+            human.Move(Vector3.left, human.speedCharter);
         }
         if (Input.GetKey("d"))
         {
-            human.Move(Vector3.right, human.speed);
+            human.Move(Vector3.right, human.speedCharter);
         }
         if (Input.GetMouseButtonDown(0))
         {
